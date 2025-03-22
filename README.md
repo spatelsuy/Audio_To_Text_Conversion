@@ -9,67 +9,49 @@ This guide explains the steps to set up a **Python environment** on **Windows** 
 
 ### Step 1: Install Python
 
-1. **Download Python** from the official website:  
-   [Python Downloads](https://www.python.org/downloads/)
-   
-2. **Install Python**:
-   - Run the installer.
-   - Make sure to **check the box that says "Add Python to PATH"** before clicking **Install Now**.
+1. **Download Python** from the official website:  [Python Downloads](https://www.python.org/downloads/)  
+Run the installer.  
+Make sure to **check the box that says "Add Python to PATH"** before clicking **Install Now**.  
 
-3. **Verify Installation**:
-   - Open **Command Prompt** and check Python installation:
-     ```cmd
-     python --version
-     ```
-   - You should see the Python version.
-
----
-
+3. **Verify Installation**:  
+On **Command Prompt** run following command. You should see the Python version.:  
+```cmd
+python --version
+```
 ### Step 2: Set Up a Virtual Environment
 
 1. **Create a Virtual Environment**:
-   - Navigate to your project directory (where you want to store your project).
-   - Run:
-     ```cmd
-     python -m venv audio_to_text
-     ```
+Navigate to your project directory (where you want to store your project).
+```cmd
+python -m venv audio_to_text
+```
 
 2. **Activate the Virtual Environment**:
-   - Run:
-     ```cmd
-     .\audio_to_text\Scripts\activate
-     ```
-   - You should see `(audio_to_text)` at the beginning of the command prompt indicating the virtual environment is active.
-
----
+```cmd
+.\audio_to_text\Scripts\activate
+```
+You should see `(audio_to_text)` at the beginning of the command prompt indicating the virtual environment is active.
 
 ### Step 3: Install Required Libraries
 
 1. **Install Vosk and Wave**:
-   - With the virtual environment activated, run:
-     ```cmd
-     pip install vosk wave
-     ```
+With the virtual environment activated, run:
+```cmd
+pip install vosk wave
+```
 
 2. **Install FFmpeg**:
-   - Go to the FFmpeg official website to download it:  
-     [FFmpeg Download](https://ffmpeg.org/download.html)
-   - Download the **Windows builds from Gyan**:  
-     [FFmpeg Builds](https://www.gyan.dev/ffmpeg/builds/)
-   - Download the **Release build** zip file.
-   - Extract it (e.g., to `C:\ffmpeg`).
-
-3. **Add FFmpeg to Windows PATH**:
-   - Add the path to FFmpeg's **bin** folder (e.g., `C:\ffmpeg\bin`).
-
-4. **Verify FFmpeg Installation**:
-   - Open **Command Prompt** and type:
-     ```cmd
-     ffmpeg -version
-     ```
-   - You should see FFmpeg's version info.
-
----
+Go to the FFmpeg official website to download it:  
+[FFmpeg Download](https://ffmpeg.org/download.html)
+Download the **Windows builds from Gyan**:  
+[FFmpeg Builds](https://www.gyan.dev/ffmpeg/builds/)  
+Download the **Release build** zip file.  
+Extract it (e.g., to `C:\ffmpeg`).  
+Add the path to FFmpeg's **bin** folder (e.g., `C:\ffmpeg\bin`).  
+Verify FFmpeg Installation
+```cmd
+ffmpeg -version
+```
 
 ### Step 4: Download the Vosk Model
 
@@ -77,11 +59,9 @@ This guide explains the steps to set up a **Python environment** on **Windows** 
 2. For example, download the **vosk-model-en-us-0.22.zip** for English.
 3. Extract the model to a folder (e.g., `C:\vosk_model`).
 
----
-
 ### Step 5: Create Your Python Script for Audio-to-Text
 
-1. **Create a Python file** (`transcribe.py`) in your project directory.
+1. **Create a Python file** (`audio_to_text_Vosk.py`) in your project directory.
    
 2. **Add the following Python script**:
 
