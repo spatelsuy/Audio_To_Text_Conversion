@@ -92,3 +92,15 @@ if __name__ == "__main__":
     else:
         transcribe_audio(args.audio_file)
 
+```
+
+## Step 6: Test it
+An input file "input.mp3" has been provided to test. 
+```
+python audio_to_text_whisper.py input.mp3
+```
+## Output
+The output looks like this:  
+Transcribed Text:   In recent times, scammers and hackers have been approaching ordinary citizens, falsely claiming to represent the comment agencies. To protect the public from failing prey to such fraud, it would be beneficial for the comment to include a QR code-based system. In this approach, each legitimate comment officer could be assigned a unique QR code. The general public would then be able to scan the code to verify whether the person is genuine, confirm the legitimacy of the reported issues, and validate the authenticity of any request or demand made. This QR code system would provide a quick and easy way for citizens to differentiate between real government officials and scammers, ensuring greater transparency and security for the public.  
+
+
