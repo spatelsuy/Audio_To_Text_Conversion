@@ -19,7 +19,7 @@ This guide explains the steps to set up a **Python environment** on **Windows** 
 Run the installer.  
 Make sure to **check the box that says "Add Python to PATH"** before clicking **Install Now**.  
 
-On **Command Prompt** run following command. You should see the Python version.:  
+On **Command Prompt** run the following command. You should see the Python version.:  
 ```cmd
 python --version
 ```
@@ -36,7 +36,7 @@ You should see `(audio_to_text)` at the beginning of the command prompt indicati
 
 ## Step 3: Install required libraries
 
-**Install torch openai-whisper ffmpeg-python**:
+**Install torch openai-whisper**:
 With the virtual environment activated, run:
 ```cmd
 pip install torch
@@ -49,7 +49,7 @@ Download the **Windows builds from Gyan**:  [FFmpeg Builds](https://www.gyan.dev
 Download the **Release build** zip file.  
 Extract it (e.g., to `C:\ffmpeg`) and set environment PATH to FFmpeg's **bin** folder (e.g., `C:\ffmpeg\bin`).  
 
-Verify FFmpeg Installation
+Verify FFmpeg Installation in a new command prompt
 ```cmd
 ffmpeg -version
 ```
@@ -62,25 +62,38 @@ ffmpeg -version
 
 ```python
 import whisper
-import ffmpeg
+import subprocess
 import argparse
 import os
 
+ALLOWED_EXTENSIONS = (".mp3", ".mp4", ".wav", ".flac")
+
 def transcribe_audio(audio_path):
-    # Load the Whisper model
-    model = whisper.load_model("base")  # You can use 'base', 'small', 'medium', or 'large'
+    if not audio_path.lower().endswith(ALLOWED_EXTENSIONS):
+        print("Error: Unsupported audio format. Use MP3, MP4, WAV, or FLAC.")
+        return
 
-    # Convert the audio to WAV format (if needed)
+    model = whisper.load_model("base")
+
+    # Convert audio to WAV if not already in WAV format
     converted_audio = "converted_audio.wav"
-    ffmpeg.input(audio_path).output(converted_audio).run(overwrite_output=True)
+    
+    if not audio_path.lower().endswith(".wav"):
+        try:
+            subprocess.run(
+                ["ffmpeg", "-i", audio_path, "-ar", "16000", "-ac", "1", "-y", converted_audio],
+                check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+            )
+        except subprocess.CalledProcessError:
+            print("Error: FFmpeg failed to process the audio file.")
+            return
+    else:
+        converted_audio = audio_path
 
-    # Transcribe the audio
     result = model.transcribe(converted_audio)
 
-    # Print and save the transcribed text
-    print("Transcribed Text: ", result["text"])
-    
-    # Save output to a text file
+    print("\nTranscribed Text: ", result["text"])
+
     with open("transcription.txt", "w", encoding="utf-8") as file:
         file.write(result["text"])
 
@@ -93,6 +106,7 @@ if __name__ == "__main__":
         print("Error: File does not exist!")
     else:
         transcribe_audio(args.audio_file)
+
 
 ```
 
