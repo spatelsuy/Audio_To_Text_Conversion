@@ -14,8 +14,16 @@ def transcribe_audio(audio_path):
 
     # Convert audio to WAV if not already in WAV format
     converted_audio = "converted_audio.wav"
+    
     if not audio_path.lower().endswith(".wav"):
-        subprocess.run(["ffmpeg", "-i", audio_path, "-ar", "16000", "-ac", "1", "-y", converted_audio])
+        try:
+            subprocess.run(
+                ["ffmpeg", "-i", audio_path, "-ar", "16000", "-ac", "1", "-y", converted_audio],
+                check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+            )
+        except subprocess.CalledProcessError:
+            print("Error: FFmpeg failed to process the audio file.")
+            return
     else:
         converted_audio = audio_path
 
