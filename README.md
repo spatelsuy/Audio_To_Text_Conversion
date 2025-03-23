@@ -1,99 +1,94 @@
-# Audio to Text Conversion with VOSK on Windows
+# Audio to Text Conversion using Whisper on Windows
 
-This guide explains the steps to set up a **Python environment** on **Windows** for converting audio to text using **VOSK** and **FFmpeg**.
+This guide explains the steps to set up a **Python environment** on **Windows** for converting audio to text using **Whisper** and **FFmpeg**.
 
 ## Prerequisites
 - Python 3.x
 - FFmpeg (for audio conversion)
-- VOSK (for speech-to-text)
+- Whisper (for speech-to-text)
 
-### Step 1: Install Python
+## Python Libraries:
+- openai-whisper (for transcription)
+- ffmpeg-python (or subprocess for FFmpeg execution)
+- argparse (for command-line input handling)
 
-1. **Download Python** from the official website:  [Python Downloads](https://www.python.org/downloads/)  
+## Step 1: Install Python and verify
+
+**Download Python** from the official website:  [Python Downloads](https://www.python.org/downloads/)  
 Run the installer.  
 Make sure to **check the box that says "Add Python to PATH"** before clicking **Install Now**.  
 
-3. **Verify Installation**:  
 On **Command Prompt** run following command. You should see the Python version.:  
 ```cmd
 python --version
 ```
-### Step 2: Set Up a Virtual Environment
 
-1. **Create a Virtual Environment**:
+## Step 2: Setup and activate virtual environment
+
+**Create a Virtual Environment**:
 Navigate to your project directory (where you want to store your project).
 ```cmd
 python -m venv audio_to_text
-```
-
-2. **Activate the Virtual Environment**:
-```cmd
 .\audio_to_text\Scripts\activate
 ```
 You should see `(audio_to_text)` at the beginning of the command prompt indicating the virtual environment is active.
 
-### Step 3: Install Required Libraries
+## Step 3: Install required libraries
 
-1. **Install Vosk and Wave**:
+**Install torch openai-whisper ffmpeg-python**:
 With the virtual environment activated, run:
 ```cmd
-pip install vosk wave
+pip install torch openai-whisper ffmpeg-python
 ```
 
-2. **Install FFmpeg**:
-Go to the FFmpeg official website to download it:  
-[FFmpeg Download](https://ffmpeg.org/download.html)
-Download the **Windows builds from Gyan**:  
-[FFmpeg Builds](https://www.gyan.dev/ffmpeg/builds/)  
+## Step 4: Install FFmpeg  
+Go to the FFmpeg official website to download it:  [FFmpeg Download](https://ffmpeg.org/download.html)  
+Download the **Windows builds from Gyan**:  [FFmpeg Builds](https://www.gyan.dev/ffmpeg/builds/)  
 Download the **Release build** zip file.  
-Extract it (e.g., to `C:\ffmpeg`).  
-Add the path to FFmpeg's **bin** folder (e.g., `C:\ffmpeg\bin`).  
+Extract it (e.g., to `C:\ffmpeg`) and set environment PATH to FFmpeg's **bin** folder (e.g., `C:\ffmpeg\bin`).  
+
 Verify FFmpeg Installation
 ```cmd
 ffmpeg -version
 ```
 
-### Step 4: Download the Vosk Model
+## Step 5: Create Your Python Script for Audio-to-Text
 
-1. Download a pre-trained model from the [Vosk Models page](https://alphacephei.com/vosk/models).
-2. For example, download the **vosk-model-en-us-0.22.zip** for English.
-3. Extract the model to a folder (e.g., `C:\vosk_model`).
-
-### Step 5: Create Your Python Script for Audio-to-Text
-
-1. **Create a Python file** (`audio_to_text_Vosk.py`) in your project directory.
+1. **Create a Python file** (`audio_to_text_Whisper.py`) in your project directory.
    
 2. **Add the following Python script**:
 
 ```python
-import wave
-import json
-import subprocess
-from vosk import Model, KaldiRecognizer
+import whisper
+import ffmpeg
+import argparse
+import os
 
-# Convert any audio to WAV using FFmpeg
-def convert_to_wav(input_file, output_file="converted_audio.wav"):
-    command = ["ffmpeg", "-i", input_file, "-acodec", "pcm_s16le", "-ar", "16000", "-ac", "1", output_file, "-y"]
-    subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    return output_file
+def transcribe_audio(audio_path):
+    # Load the Whisper model
+    model = whisper.load_model("base")  # You can use 'base', 'small', 'medium', or 'large'
 
-# Transcribe WAV using VOSK
-def transcribe_audio(wav_file, model_path="C:/vosk_model"):
-    model = Model(model_path)
-    recognizer = KaldiRecognizer(model, 16000)
+    # Convert the audio to WAV format (if needed)
+    converted_audio = "converted_audio.wav"
+    ffmpeg.input(audio_path).output(converted_audio).run(overwrite_output=True)
 
-    with wave.open(wav_file, "rb") as wf:
-        while True:
-            data = wf.readframes(4000)
-            if len(data) == 0:
-                break
-            recognizer.AcceptWaveform(data)
+    # Transcribe the audio
+    result = model.transcribe(converted_audio)
 
-    result = json.loads(recognizer.FinalResult())
-    return result.get("text", "")
+    # Print and save the transcribed text
+    print("Transcribed Text: ", result["text"])
+    
+    # Save output to a text file
+    with open("transcription.txt", "w", encoding="utf-8") as file:
+        file.write(result["text"])
 
-# Run the process
-audio_file = "sample.mp3"  # Replace with your audio file
-wav_file = convert_to_wav(audio_file)
-text = transcribe_audio(wav_file)
-print("Transcribed Text:", text)
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Convert audio to text using Whisper.")
+    parser.add_argument("audio_file", type=str, help="Path to the input audio file")
+    args = parser.parse_args()
+
+    if not os.path.exists(args.audio_file):
+        print("Error: File does not exist!")
+    else:
+        transcribe_audio(args.audio_file)
+
